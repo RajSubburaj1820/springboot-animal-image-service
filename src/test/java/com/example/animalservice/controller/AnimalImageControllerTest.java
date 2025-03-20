@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.List;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -50,12 +52,14 @@ class AnimalImageControllerTest {
         image.setType("cat");
         image.setImageUrl("https://placekitten.com/400/400");
 
-        when(service.getLastSavedAnimalImage("cat")).thenReturn(image);
+        when(service.getLastSavedAnimalImages("cat", 1)).thenReturn(List.of(image));
 
         mockMvc.perform(get("/api/animals/last")
-                        .param("type", "cat"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.type").value("cat"))
-                .andExpect(jsonPath("$.imageUrl").value("https://placekitten.com/400/400"));
+                        .param("type", "cat")  // ✅ Ensure type is passed
+                        .param("count", "1")   // ✅ Ensure count is passed
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())  // Expecting 200 OK
+                .andExpect(jsonPath("$[0].type").value("cat"))
+                .andExpect(jsonPath("$[0].imageUrl").value("https://placekitten.com/400/400"));
     }
 }
