@@ -35,7 +35,9 @@ class AnimalImageControllerTest {
 
     @Test
     void shouldFetchAnimalImages() throws Exception {
-        mockMvc.perform(post("/api/animals/fetch?type=cat&count=1")
+        mockMvc.perform(post("/api/animals/fetch")
+                        .param("type", "cat")
+                        .param("count", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -50,7 +52,8 @@ class AnimalImageControllerTest {
 
         when(service.getLastSavedAnimalImage("cat")).thenReturn(image);
 
-        mockMvc.perform(get("/api/animals/last?type=cat"))
+        mockMvc.perform(get("/api/animals/last")
+                        .param("type", "cat"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.type").value("cat"))
                 .andExpect(jsonPath("$.imageUrl").value("https://placekitten.com/400/400"));
