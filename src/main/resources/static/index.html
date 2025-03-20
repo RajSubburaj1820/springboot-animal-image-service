@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Image Service</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1>Animal Image Service 🐱🐶🐻</h1>
+
+<label for="animalType">Choose an animal:</label>
+<select id="animalType">
+    <option value="cat">Cat</option>
+    <option value="dog">Dog</option>
+    <option value="bear">Bear</option>
+</select>
+
+<label for="imageCount">Select number of images (1-10):</label>
+<select id="imageCount">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+    <option value="8">8</option>
+    <option value="9">9</option>
+    <option value="10">10</option>
+</select>
+
+<button onclick="fetchAnimalImage()">Get Image</button>
+
+<div id="imageContainer"></div>
+<p id="resultMessage"></p>
+
+<script>
+    function fetchAnimalImage() {
+        const type = document.getElementById("animalType").value;
+        const count = document.getElementById("imageCount").value;
+        document.getElementById("resultMessage").innerText = "Fetching images for " + type + "...";
+
+        fetch(`/api/animals/last?type=${type}&count=${count}`)
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    document.getElementById("imageContainer").innerHTML = data.map(img =>
+                        `<img src="${img.imageUrl}" alt="${type}" width="200" style="margin: 10px;">`
+                    ).join("");
+                    document.getElementById("resultMessage").innerText = "Successfully fetched images!";
+                } else {
+                    document.getElementById("imageContainer").innerHTML = "";
+                    document.getElementById("resultMessage").innerText = "No images found for " + type;
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching images:", error);
+                document.getElementById("resultMessage").innerText = "Error fetching images. Please try again.";
+            });
+    }
+</script>
+</body>
+</html>
