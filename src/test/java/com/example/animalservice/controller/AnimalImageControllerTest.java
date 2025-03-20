@@ -36,7 +36,7 @@ class AnimalImageControllerTest {
     }
 
     @Test
-    void shouldFetchAnimalImages() throws Exception {
+    void shouldFetchCatImages() throws Exception {
         mockMvc.perform(post("/api/animals/fetch")
                         .param("type", "cat")
                         .param("count", "1")
@@ -47,10 +47,10 @@ class AnimalImageControllerTest {
     }
 
     @Test
-    void shouldReturnLastAnimalImage() throws Exception {
+    void shouldReturnLastCatImage() throws Exception {
         AnimalImage image = new AnimalImage();
         image.setType("cat");
-        image.setImageUrl("https://placekitten.com/400/400");
+        image.setImageUrl("https://api.thecatapi.com/v1/images/search");
 
         when(service.getLastSavedAnimalImages("cat", 1)).thenReturn(List.of(image));
 
@@ -60,6 +60,62 @@ class AnimalImageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())  // Expecting 200 OK
                 .andExpect(jsonPath("$[0].type").value("cat"))
-                .andExpect(jsonPath("$[0].imageUrl").value("https://placekitten.com/400/400"));
+                .andExpect(jsonPath("$[0].imageUrl").value("https://api.thecatapi.com/v1/images/search"));
+    }
+
+    @Test
+    void shouldFetchDogImages() throws Exception {
+        mockMvc.perform(post("/api/animals/fetch")
+                        .param("type", "dog")
+                        .param("count", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(service, times(1)).fetchAndSaveAnimalImages("dog", 1);
+    }
+
+    @Test
+    void shouldReturnLastDogImage() throws Exception {
+        AnimalImage image = new AnimalImage();
+        image.setType("dog");
+        image.setImageUrl("https://random.dog/woof.json");
+
+        when(service.getLastSavedAnimalImages("dog", 1)).thenReturn(List.of(image));
+
+        mockMvc.perform(get("/api/animals/last")
+                        .param("type", "dog")  // ✅ Ensure type is passed
+                        .param("count", "1")   // ✅ Ensure count is passed
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())  // Expecting 200 OK
+                .andExpect(jsonPath("$[0].type").value("dog"))
+                .andExpect(jsonPath("$[0].imageUrl").value("https://random.dog/woof.json"));
+    }
+
+    @Test
+    void shouldFetchBearImages() throws Exception {
+        mockMvc.perform(post("/api/animals/fetch")
+                        .param("type", "bear")
+                        .param("count", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(service, times(1)).fetchAndSaveAnimalImages("bear", 1);
+    }
+
+    @Test
+    void shouldReturnLastBearImage() throws Exception {
+        AnimalImage image = new AnimalImage();
+        image.setType("bear");
+        image.setImageUrl("https://placebear.com/400/400");
+
+        when(service.getLastSavedAnimalImages("bear", 1)).thenReturn(List.of(image));
+
+        mockMvc.perform(get("/api/animals/last")
+                        .param("type", "bear")  // ✅ Ensure type is passed
+                        .param("count", "1")   // ✅ Ensure count is passed
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())  // Expecting 200 OK
+                .andExpect(jsonPath("$[0].type").value("bear"))
+                .andExpect(jsonPath("$[0].imageUrl").value("https://placebear.com/400/400"));
     }
 }

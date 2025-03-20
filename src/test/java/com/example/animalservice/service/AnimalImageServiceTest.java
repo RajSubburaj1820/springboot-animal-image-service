@@ -34,10 +34,28 @@ class AnimalImageServiceTest {
     }
 
     @Test
-    void shouldFetchAndSaveAnimalImages() {
+    void shouldFetchAndSaveCatImages() {
         when(repository.save(any(AnimalImage.class))).thenReturn(new AnimalImage());
 
         service.fetchAndSaveAnimalImages("cat", 2);
+
+        verify(repository, times(2)).save(any(AnimalImage.class));
+    }
+
+    @Test
+    void shouldFetchAndSaveDogImages() {
+        when(repository.save(any(AnimalImage.class))).thenReturn(new AnimalImage());
+
+        service.fetchAndSaveAnimalImages("dog", 2);
+
+        verify(repository, times(2)).save(any(AnimalImage.class));
+    }
+
+    @Test
+    void shouldFetchAndSaveBearImages() {
+        when(repository.save(any(AnimalImage.class))).thenReturn(new AnimalImage());
+
+        service.fetchAndSaveAnimalImages("bear", 2);
 
         verify(repository, times(2)).save(any(AnimalImage.class));
     }
