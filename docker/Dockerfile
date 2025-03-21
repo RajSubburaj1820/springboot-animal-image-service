@@ -1,13 +1,13 @@
-# Use an official OpenJDK image as the base image
+# Use an official OpenJDK image as a base
 FROM openjdk:17-jdk-slim
 
-# Set the working directory inside the container
+# Set working directory inside container
 WORKDIR /app
 
-# Copy the built JAR file into the container
+# Copy the jar file into the container
 COPY target/springboot-animal-image-service-1.0.0.jar app.jar
 
-# Expose the application port
+# Expose port 8080
 EXPOSE 8080
 
 # Run the application

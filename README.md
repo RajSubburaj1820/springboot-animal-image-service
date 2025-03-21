@@ -60,12 +60,22 @@ The service fetches images from the following sources:
    ```bash
    curl -X GET "http://localhost:8080/api/animals/last-stored?type=cat"
    ```
+4. **Access the UI:**  
+   Open in browser: [http://localhost:8080/index.html](http://localhost:8080/index.html)
 
-**(Optional: If using PostgreSQL, run with `docker-compose`):**
+**Note: Follow these steps if port 8080 is already in use.**
 ```bash
-docker-compose up --build
-```
-
+   lsof -i :8080
+   ```
+**You'll see output like:**
+```bash
+   java    12345 rajsubburaj  ... TCP *:8080 (LISTEN)
+   ```
+**Take note of the PID (process ID) — in this case, 12345.**
+**To stop it, run:**
+```bash
+   kill -9 12345
+   ```
 ---
 
 ## 📌 How to Access H2 Console
