@@ -24,6 +24,8 @@ The service fetches images from the following sources:
 
 ## 📌 How to Run the Application
 
+### Note: Please run this project using JDK 17.
+
 ### 🚀 Running via Spring Boot (Local Development)
 1. **Clone the Repository:**
    ```bash
