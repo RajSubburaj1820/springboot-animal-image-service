@@ -1,8 +1,9 @@
+
 package com.example.animalservice.controller;
 
 import com.example.animalservice.model.AnimalImage;
 import com.example.animalservice.service.AnimalImageService;
-import jakarta.annotation.PostConstruct;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/animals")
 public class AnimalImageController {
+
     private final AnimalImageService service;
 
     public AnimalImageController(AnimalImageService service) {
@@ -17,27 +19,30 @@ public class AnimalImageController {
     }
 
     @PostMapping("/fetch")
-    public String fetchImages(@RequestParam String type, @RequestParam int count) {
-        service.fetchAndSaveAnimalImages(type, count);
-        return count + " images of " + type + " saved successfully.";
+    public ResponseEntity<String> fetchImages(@RequestParam String type, @RequestParam int count) {
+        try {
+            service.fetchAndSaveAnimalImages(type, count);
+            return ResponseEntity.ok(count + " images of " + type + " saved successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching images: " + e.getMessage());
+        }
     }
 
     @GetMapping("/last")
-    public List<AnimalImage> getLastImages(@RequestParam String type, @RequestParam int count) {
-        return service.getLastSavedAnimalImages(type, count);
+    public ResponseEntity<List<AnimalImage>> getLastImages(@RequestParam String type, @RequestParam int count) {
+        List<AnimalImage> images = service.getLastSavedAnimalImages(type, count);
+        if (images.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(images);
     }
 
     @GetMapping("/last-stored")
-    public AnimalImage getLastStoredImage(@RequestParam String type) {
-        return service.getLastSavedAnimalImage(type);
-    }
-
-    @PostConstruct
-    public void preFetchLastStoredImages() {
-        System.out.println("Preloading last stored images...");
-        service.fetchAndSaveAnimalImages("cat", 1);
-        service.fetchAndSaveAnimalImages("dog", 1);
-        service.fetchAndSaveAnimalImages("bear", 1);
-        System.out.println("Preloaded images are now available.");
+    public ResponseEntity<AnimalImage> getLastStored(@RequestParam String type) {
+        AnimalImage image = service.getLastSavedAnimalImage(type);
+        if (image == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(image);
     }
 }

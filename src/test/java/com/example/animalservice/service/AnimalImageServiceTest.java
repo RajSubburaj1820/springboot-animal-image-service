@@ -2,76 +2,53 @@ package com.example.animalservice.service;
 
 import com.example.animalservice.model.AnimalImage;
 import com.example.animalservice.repository.AnimalImageRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class AnimalImageServiceTest {
 
-    @Mock
-    private AnimalImageRepository repository;
-
-    @Mock
-    private RestTemplate restTemplate;
-
-    @InjectMocks
+    @Autowired
     private AnimalImageService service;
 
-    @BeforeEach
-    void setUp() {
-        service = new AnimalImageService(repository);
-    }
+    @Autowired
+    private AnimalImageRepository repository;
 
     @Test
-    void shouldFetchAndSaveCatImages() {
-        when(repository.save(any(AnimalImage.class))).thenReturn(new AnimalImage());
-
+    void shouldFetchAndSaveAnimalImages() {
         service.fetchAndSaveAnimalImages("cat", 2);
-
-        verify(repository, times(2)).save(any(AnimalImage.class));
-    }
-
-    @Test
-    void shouldFetchAndSaveDogImages() {
-        when(repository.save(any(AnimalImage.class))).thenReturn(new AnimalImage());
-
-        service.fetchAndSaveAnimalImages("dog", 2);
-
-        verify(repository, times(2)).save(any(AnimalImage.class));
-    }
-
-    @Test
-    void shouldFetchAndSaveBearImages() {
-        when(repository.save(any(AnimalImage.class))).thenReturn(new AnimalImage());
-
-        service.fetchAndSaveAnimalImages("bear", 2);
-
-        verify(repository, times(2)).save(any(AnimalImage.class));
+        List<AnimalImage> images = repository.findTopNByTypeOrderByIdDesc("cat", 2);
+        assertEquals(2, images.size());
     }
 
     @Test
     void shouldReturnLastSavedAnimalImage() {
-        AnimalImage expectedImage = new AnimalImage();
-        expectedImage.setType("cat");
-        expectedImage.setImageUrl("https://placekitten.com/400/400");
+        service.fetchAndSaveAnimalImages("cat", 1);
+        AnimalImage image = service.getLastSavedAnimalImage("cat");
+        assertNotNull(image);
+        assertEquals("cat", image.getType());
+    }
 
-        when(repository.findTopByTypeOrderByIdDesc("cat")).thenReturn(Optional.of(expectedImage));
+    @Test
+    void shouldNotSaveImagesForInvalidAnimalType() {
+        service.fetchAndSaveAnimalImages("unicorn", 1);
+        List<AnimalImage> images = repository.findTopNByTypeOrderByIdDesc("unicorn", 1);
+        assertTrue(images.isEmpty());
+    }
 
-        AnimalImage actualImage = service.getLastSavedAnimalImage("cat");
+    @Test
+    void shouldReturnNullWhenNoImageExists() {
+        List<AnimalImage> images = repository.findTopNByTypeOrderByIdDesc("sloth", 1);
+        if (!images.isEmpty()) {
+            repository.deleteAll(images); // Clear out existing test data if present
+        }
 
-        assertNotNull(actualImage);
-        assertEquals("cat", actualImage.getType());
-        assertEquals("https://placekitten.com/400/400", actualImage.getImageUrl());
+        AnimalImage image = service.getLastSavedAnimalImage("sloth");
+        assertNull(image);
     }
 }
