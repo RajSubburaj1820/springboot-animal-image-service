@@ -1,3 +1,4 @@
+#Due to directory issue, I moved the dockerfile at main folder level.
 # Use an official OpenJDK image as a base
 FROM openjdk:17-jdk-slim
 
