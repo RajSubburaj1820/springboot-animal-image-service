@@ -25,6 +25,20 @@ The service fetches images from the following sources:
 ## 📌 How to Run the Application
 
 ### Note: Please run this project using JDK 17.
+### Temporarily Set JDK 17 (for current terminal session)
+1. **Run these commands in terminal**
+   ```bash
+   export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+   export PATH=$JAVA_HOME/bin:$PATH
+   ```
+2. **Now verify**
+   ```bash
+   java -version
+   ```
+3. **You should see:**
+   ```nginx
+   java version "17.0.x"
+   ```
 
 ### 🚀 Running via Spring Boot (Local Development)
 1. **Clone the Repository:**
@@ -70,7 +84,7 @@ The service fetches images from the following sources:
    lsof -i :8080
    ```
 **You'll see output like:**
-```bash
+```nginx
    java    12345 rajsubburaj  ... TCP *:8080 (LISTEN)
    ```
 **Take note of the PID (process ID) — in this case, 12345.**
